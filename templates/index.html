@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+    <title>Youtube downloader</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/fontawesome.min.css" integrity="sha384-wESLQ85D6gbsF459vf1CiZ2+rr+CsxRY0RpiF1tLlQpDnAgg6rwdsUF1+Ics2bni" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="title">Youtube Downloader</h1>
+          </header>
+        <h2 class="subtitle">Copy and paste youtube video/playlist url: </h2>
+        <form action="" method = "POST">
+            <input class="youtubeUrl"placeholder="Youtube Video or Playlist Url"type = "url" name = "url" /><br><br>
+            <input  class="btn" type = "submit" value = "Download"onclick="setText();" /><br>
+        </form>
+        <button class="btn" name="deleteBtn" onclick="deleteFiles();">Delete all files</button>
+    <h3 class="downloadMsg"> <strong id ="downloadingMsg">{{ downloadingMsg }}</strong>
+    
+    <h3 id="fileMsg"style="opacity: 0;">Files Downloaded: </h3>
+    <ul id="fileList"></ul>
+    </h3>
+    </div>
+    <script>
+        function downloadedFiles(){
+            fetch('/downloadedfiles').then(response => response.json())
+            .then(data => { 
+                if (data.data.length > 0){
+                    var msg = document.getElementById("fileMsg")
+                    msg.setAttribute("style", "opacity: 100;")
+                    msg.innerHTML= "Files Downloaded:"
+                    var list= document.getElementById("fileList")
+                    listHTML =""
+                    list.innerHTML = ""
+                    for (i =0;i< data.data.length; i++){
+                        listHTML =listHTML + "<li>"+data.data[i]+"</li>"
+                    }
+                    list.innerHTML = listHTML 
+                }
+            });
+        }
+        var download= setInterval(downloadedFiles, 10000);
+
+        function setText() {
+            document.getElementById("downloadingMsg").innerHTML = "Downloading..."
+        }
+        function deleteFiles() {
+            fetch('/deleteData').then(response => response.json())
+            .then(data => {
+                console.log(data.status)
+                document.getElementById("downloadingMsg").innerHTML = "Files deleted"
+            });
+            var msg = document.getElementById("fileMsg").setAttribute("style", "opacity: 0;")
+            var filelist= document.getElementById("fileList").setAttribute("style", "opacity: 0;")
+        }
+    </script>
+</body>
+</html>
